@@ -7,6 +7,59 @@ module Task1 where
 -- that are not supposed to be used in this assignment
 import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, tail, init, last, show, read)
 
+
+-----------------------------------
+-- 
+-- Returns all elements of a list except last element
+--
+-- Usage example: 
+-- 
+-- >>> exceptLast [1, 2, 3]
+-- [1,2]
+-- >>> exceptLast [1]
+-- []
+-- >>> exceptLast [3, 4, 5, 6, 7]
+-- [3,4,5,6]
+
+exceptLast :: [Int] -> [Int]
+exceptLast []     = []
+exceptLast [_]    = []
+exceptLast (x:xs) = x:exceptLast xs 
+-----------------------------------
+-- 
+-- Gets the length of a list of Ints
+--
+-- Usage example:
+--
+-- >>> length [1, 2, 3]
+-- 3
+-- >>> length [5]
+-- 1
+-- >>> length []
+-- 0
+
+
+length :: [Int] -> Int
+length [] = 0
+length (_:xs) = 1 + length xs  
+
+-----------------------------------
+-- 
+-- Gets the last element of a list
+--
+-- Usage example: 
+-- 
+-- >>> tail [1, 2, 3]
+-- 3
+-- >>> tail [1] 
+-- 1
+-- >>> tail [5, 9, 7]
+-- 7
+tail :: [Int] -> Int
+tail []     = error "Empty list has no tail"
+tail [x]    = x 
+tail (_:xs) = tail xs
+
 -----------------------------------
 --
 -- Checks whether the last digit is a valid check digit
@@ -21,8 +74,22 @@ import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, ta
 -- >>> validate 34562
 -- False
 
+
+
+
 validate :: Integer -> Bool
-validate = error "TODO: define validate"
+validate x = luhn (exceptLast (toDigits x)) == tail (toDigits x)
+
+-----------------------------------
+-- Helper function to compute (10 - (s mod 10)) mod 10
+--
+-- Usage example:
+--
+-- >>> luhnFunc 19
+-- 1
+luhnFunc :: Int -> Int
+luhnFunc s = (10 - (s `mod` 10)) `mod` 10
+
 
 -----------------------------------
 --
@@ -33,25 +100,31 @@ validate = error "TODO: define validate"
 -- >>> luhn [3,4,5,6]
 -- 1
 
+
 luhn :: [Int] -> Int
-luhn = error "TODO: define luhn"
+luhn x = luhnFunc (sum (map normalize (doubleEveryOther (reverse x))))
 
 -----------------------------------
 --
 -- Produces list of digits for given positive number;
--- otherwise (for zero and negative numbers) returns empty list
---
+-- otherwise (for zero and negative numbers) returns empty BlockedIndefinitelyOnSTM
+--  
 -- Usage example:
 --
 -- >>> toDigits 3456
 -- [3,4,5,6]
 -- >>> toDigits 0
--- []
+-- [0]
 -- >>> toDigits (-123)
 -- []
 
 toDigits :: Integer -> [Int]
-toDigits = error "TODO: define toDigits"
+toDigits n
+    | n < 0     = []
+    | n < 10    = [fromIntegral n]
+    | otherwise = toDigits (n `div` 10) ++ toDigits (n `mod` 10)
+
+
 
 -----------------------------------
 --
@@ -65,7 +138,8 @@ toDigits = error "TODO: define toDigits"
 -- [6,5,4,3]
 
 reverse :: [a] -> [a]
-reverse = error "TODO: define reverse"
+reverse [] = []
+reverse (x:xs) = reverse xs ++ [x]
 
 -----------------------------------
 --
@@ -77,7 +151,9 @@ reverse = error "TODO: define reverse"
 -- [12,5,8,3]
 
 doubleEveryOther :: [Int] -> [Int]
-doubleEveryOther = error "TODO: define doubleEveryOther"
+doubleEveryOther [] = []
+doubleEveryOther [x] = [2 * x]
+doubleEveryOther (x:y:xs) = 2 * x:y:doubleEveryOther xs
 
 -----------------------------------
 --
@@ -94,7 +170,9 @@ doubleEveryOther = error "TODO: define doubleEveryOther"
 -- 1
 
 normalize :: Int -> Int
-normalize = error "TODO: define normalize"
+normalize x
+    | x >= 10    = x - 9
+    | otherwise  = x
 
 -----------------------------------
 --
@@ -107,7 +185,8 @@ normalize = error "TODO: define normalize"
 -- [2,4,6,8]
 
 map :: (a -> b) -> [a] -> [b]
-map = error "TODO: define map"
+map _ []     = []
+map f (x:xs) = f x:map f xs
 
 -----------------------------------
 --
@@ -121,4 +200,5 @@ map = error "TODO: define map"
 -- 0
 
 sum :: [Int] -> Int
-sum = error "TODO: define sum"
+sum []     = 0
+sum (x:xs) = x + sum xs
