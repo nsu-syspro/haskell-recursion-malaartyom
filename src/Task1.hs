@@ -21,7 +21,7 @@ import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, ta
 -- >>> exceptLast [3, 4, 5, 6, 7]
 -- [3,4,5,6]
 
-exceptLast :: [Int] -> [Int]
+exceptLast :: [a] -> [a]
 exceptLast []     = []
 exceptLast [_]    = []
 exceptLast (x:xs) = x:exceptLast xs 
@@ -55,7 +55,9 @@ length (_:xs) = 1 + length xs
 -- 1
 -- >>> tail [5, 9, 7]
 -- 7
-tail :: [Int] -> Int
+-- >>> tail "abc"
+-- 'c'
+tail :: [a] -> a
 tail []     = error "Empty list has no tail"
 tail [x]    = x 
 tail (_:xs) = tail xs
@@ -81,14 +83,14 @@ validate :: Integer -> Bool
 validate x = luhn (exceptLast (toDigits x)) == tail (toDigits x)
 
 -----------------------------------
--- Helper function to compute (10 - (s mod 10)) mod 10
+-- Helper function to compute (n - (s mod n)) mod n
 --
 -- Usage example:
 --
--- >>> luhnFunc 19
+-- >>> luhnFunc 10 19
 -- 1
-luhnFunc :: Int -> Int
-luhnFunc s = (10 - (s `mod` 10)) `mod` 10
+luhnFunc :: Int -> Int -> Int
+luhnFunc n s = (n - (s `mod` n)) `mod` n
 
 
 -----------------------------------
@@ -102,7 +104,7 @@ luhnFunc s = (10 - (s `mod` 10)) `mod` 10
 
 
 luhn :: [Int] -> Int
-luhn x = luhnFunc (sum (map normalize (doubleEveryOther (reverse x))))
+luhn x = luhnFunc 10 (sum (map (normalize 10) (doubleEveryOther (reverse x))))
 
 -----------------------------------
 --
@@ -157,22 +159,25 @@ doubleEveryOther (x:y:xs) = 2 * x:y:doubleEveryOther xs
 
 -----------------------------------
 --
--- Normalizes given number to single digit by subtracting 9
--- if it is greater than or equal to 10
+-- Normalizes given number to single digit by subtracting N - 1
+-- if it is greater than or equal to N
 --
--- (Assumes inputs between 0 and 18)
+-- (Assumes inputs between 0 and 2 * N)
 --
 -- Usage example:
 --
--- >>> normalize 12
+-- >>> normalize 10 12
 -- 3
--- >>> normalize 1
+-- >>> normalize 10 1
 -- 1
+-- >>> normalize 16 17
+-- 2
 
-normalize :: Int -> Int
-normalize x
-    | x >= 10    = x - 9
-    | otherwise  = x
+normalize :: Int -> Int -> Int 
+normalize n x
+    | x >= n    = x - n + 1
+    | otherwise = x
+
 
 -----------------------------------
 --

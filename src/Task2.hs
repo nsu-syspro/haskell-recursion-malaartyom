@@ -12,7 +12,8 @@ import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, ta
 -- You can reuse already implemented functions from Task1
 -- by listing them in this import clause
 -- NOTE: only listed functions are imported, everything else remains hidden
-import Task1 (reverse, map, sum)
+import Task1 (reverse, map, sum, doubleEveryOther, exceptLast, tail, toDigits, normalize, luhnFunc)
+import Data.Bits (Bits(xor))
 
 -----------------------------------
 --
@@ -25,7 +26,7 @@ import Task1 (reverse, map, sum)
 -- 1
 
 luhnModN :: Int -> (a -> Int) -> [a] -> Int
-luhnModN = error "TODO: define luhnModN"
+luhnModN n f x = luhnFunc n (sum (map (normalize n) (doubleEveryOther (reverse (map f x)))))
 
 -----------------------------------
 --
@@ -37,7 +38,7 @@ luhnModN = error "TODO: define luhnModN"
 -- 1
 
 luhnDec :: [Int] -> Int
-luhnDec = error "TODO: define luhnDec"
+luhnDec = luhnModN 10 id
 
 -----------------------------------
 --
@@ -49,7 +50,7 @@ luhnDec = error "TODO: define luhnDec"
 -- 15
 
 luhnHex :: [Char] -> Int
-luhnHex = error "TODO: define luhnHex"
+luhnHex = luhnModN 16 digitToInt
 
 -----------------------------------
 --
@@ -65,8 +66,10 @@ luhnHex = error "TODO: define luhnHex"
 -- [10,11,12,13,14,15]
 
 digitToInt :: Char -> Int
-digitToInt = error "TODO: define digitToInt"
-
+digitToInt '0' = 0
+digitToInt 'A' = 10
+digitToInt 'a' = 10
+digitToInt  x  = 1 + digitToInt (pred x)
 -----------------------------------
 --
 -- Checks whether the last decimal digit is a valid check digit
@@ -82,7 +85,7 @@ digitToInt = error "TODO: define digitToInt"
 -- False
 
 validateDec :: Integer -> Bool
-validateDec = error "TODO: define validateDec"
+validateDec x = luhnDec (exceptLast (toDigits x)) == tail (toDigits x)
 
 -----------------------------------
 --
@@ -99,4 +102,7 @@ validateDec = error "TODO: define validateDec"
 -- False
 
 validateHex :: [Char] -> Bool
-validateHex = error "TODO: define validateHex"
+validateHex x = luhnHex (exceptLast x) == tail (map digitToInt x)
+
+
+
