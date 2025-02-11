@@ -12,7 +12,7 @@ import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, ta
 -- You can reuse already implemented functions from Task1
 -- by listing them in this import clause
 -- NOTE: only listed functions are imported, everything else remains hidden
-import Task1 (reverse, map, sum, doubleEveryOther, exceptLast, tail, toDigits, normalize, luhnFunc)
+import Task1 (reverse, map, sum, doubleEveryOther, init, last, toDigits, normalize, luhnFunc)
 import Data.Bits (Bits(xor))
 
 -----------------------------------
@@ -85,7 +85,7 @@ digitToInt  x  = 1 + digitToInt (pred x)
 -- False
 
 validateDec :: Integer -> Bool
-validateDec x = luhnDec (exceptLast (toDigits x)) == tail (toDigits x)
+validateDec x = luhnDec (init (toDigits x)) == last (toDigits x)
 
 -----------------------------------
 --
@@ -102,7 +102,7 @@ validateDec x = luhnDec (exceptLast (toDigits x)) == tail (toDigits x)
 -- False
 
 validateHex :: [Char] -> Bool
-validateHex x = luhnHex (exceptLast x) == tail (map digitToInt x)
+validateHex x = luhnHex (init x) == last (map digitToInt x)
 
 
 

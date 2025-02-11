@@ -14,17 +14,17 @@ import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, ta
 --
 -- Usage example: 
 -- 
--- >>> exceptLast [1, 2, 3]
+-- >>> init [1, 2, 3]
 -- [1,2]
--- >>> exceptLast [1]
+-- >>> init [1]
 -- []
--- >>> exceptLast [3, 4, 5, 6, 7]
+-- >>> init [3, 4, 5, 6, 7]
 -- [3,4,5,6]
 
-exceptLast :: [a] -> [a]
-exceptLast []     = []
-exceptLast [_]    = []
-exceptLast (x:xs) = x:exceptLast xs 
+init :: [a] -> [a]
+init []     = []
+init [_]    = []
+init (x:xs) = x : init xs 
 -----------------------------------
 -- 
 -- Gets the length of a list of Ints
@@ -49,18 +49,18 @@ length (_:xs) = 1 + length xs
 --
 -- Usage example: 
 -- 
--- >>> tail [1, 2, 3]
+-- >>> last [1, 2, 3]
 -- 3
--- >>> tail [1] 
+-- >>> last [1] 
 -- 1
--- >>> tail [5, 9, 7]
+-- >>> last [5, 9, 7]
 -- 7
--- >>> tail "abc"
+-- >>> last "abc"
 -- 'c'
-tail :: [a] -> a
-tail []     = error "Empty list has no tail"
-tail [x]    = x 
-tail (_:xs) = tail xs
+last :: [a] -> a
+last []     = error "Empty list has no tail"
+last [x]    = x 
+last (_:xs) = last xs
 
 -----------------------------------
 --
@@ -80,7 +80,7 @@ tail (_:xs) = tail xs
 
 
 validate :: Integer -> Bool
-validate x = luhn (exceptLast (toDigits x)) == tail (toDigits x)
+validate x = luhn (init (toDigits x)) == last (toDigits x)
 
 -----------------------------------
 -- Helper function to compute (n - (s mod n)) mod n
@@ -109,7 +109,7 @@ luhn x = luhnFunc 10 (sum (map (normalize 10) (doubleEveryOther (reverse x))))
 -----------------------------------
 --
 -- Produces list of digits for given positive number;
--- otherwise (for zero and negative numbers) returns empty BlockedIndefinitelyOnSTM
+-- otherwise (for negative numbers) returns empty list
 --  
 -- Usage example:
 --
@@ -155,7 +155,7 @@ reverse (x:xs) = reverse xs ++ [x]
 doubleEveryOther :: [Int] -> [Int]
 doubleEveryOther [] = []
 doubleEveryOther [x] = [2 * x]
-doubleEveryOther (x:y:xs) = 2 * x:y:doubleEveryOther xs
+doubleEveryOther (x:y:xs) = 2 * x : y : doubleEveryOther xs
 
 -----------------------------------
 --
@@ -191,7 +191,7 @@ normalize n x
 
 map :: (a -> b) -> [a] -> [b]
 map _ []     = []
-map f (x:xs) = f x:map f xs
+map f (x:xs) = f x : map f xs
 
 -----------------------------------
 --
