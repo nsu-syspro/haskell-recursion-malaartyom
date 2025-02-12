@@ -12,7 +12,9 @@ import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, ta
 -- You can reuse already implemented functions from Task1
 -- by listing them in this import clause
 -- NOTE: only listed functions are imported, everything else remains hidden
-import Task1 (reverse, map, sum)
+import Task1 (reverse, map, sum, doubleEveryOther, init, last, toDigits, normalize, luhnFunc)
+import Data.Bits (Bits(xor))
+import Data.Char (ord, isDigit)
 
 -----------------------------------
 --
@@ -25,7 +27,7 @@ import Task1 (reverse, map, sum)
 -- 1
 
 luhnModN :: Int -> (a -> Int) -> [a] -> Int
-luhnModN = error "TODO: define luhnModN"
+luhnModN n f x = luhnFunc n (sum (map (normalize n) (doubleEveryOther (reverse (map f x)))))
 
 -----------------------------------
 --
@@ -37,7 +39,7 @@ luhnModN = error "TODO: define luhnModN"
 -- 1
 
 luhnDec :: [Int] -> Int
-luhnDec = error "TODO: define luhnDec"
+luhnDec = luhnModN 10 id
 
 -----------------------------------
 --
@@ -49,7 +51,7 @@ luhnDec = error "TODO: define luhnDec"
 -- 15
 
 luhnHex :: [Char] -> Int
-luhnHex = error "TODO: define luhnHex"
+luhnHex = luhnModN 16 digitToInt
 
 -----------------------------------
 --
@@ -65,7 +67,11 @@ luhnHex = error "TODO: define luhnHex"
 -- [10,11,12,13,14,15]
 
 digitToInt :: Char -> Int
-digitToInt = error "TODO: define digitToInt"
+digitToInt x
+  | isDigit x = ord x - ord '0'
+  | (x >= 'a') && (x <= 'f') = ord x - ord 'a' + 10
+  | (x >= 'A') && (x <= 'F') = ord x - ord 'A' + 10
+  | otherwise = error "Can not convert to Int"
 
 -----------------------------------
 --
@@ -82,7 +88,7 @@ digitToInt = error "TODO: define digitToInt"
 -- False
 
 validateDec :: Integer -> Bool
-validateDec = error "TODO: define validateDec"
+validateDec x = luhnDec (init (toDigits x)) == last (toDigits x)
 
 -----------------------------------
 --
@@ -99,4 +105,7 @@ validateDec = error "TODO: define validateDec"
 -- False
 
 validateHex :: [Char] -> Bool
-validateHex = error "TODO: define validateHex"
+validateHex x = luhnHex (init x) == last (map digitToInt x)
+
+
+
