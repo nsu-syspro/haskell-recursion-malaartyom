@@ -14,6 +14,7 @@ import Prelude hiding (reverse, map, filter, sum, foldl, foldr, length, head, ta
 -- NOTE: only listed functions are imported, everything else remains hidden
 import Task1 (reverse, map, sum, doubleEveryOther, init, last, toDigits, normalize, luhnFunc)
 import Data.Bits (Bits(xor))
+import Data.Char (ord, isDigit)
 
 -----------------------------------
 --
@@ -66,10 +67,12 @@ luhnHex = luhnModN 16 digitToInt
 -- [10,11,12,13,14,15]
 
 digitToInt :: Char -> Int
-digitToInt '0' = 0
-digitToInt 'A' = 10
-digitToInt 'a' = 10
-digitToInt  x  = 1 + digitToInt (pred x)
+digitToInt x
+  | isDigit x = ord x - ord '0'
+  | (x >= 'a') && (x <= 'f') = ord x - ord 'a' + 10
+  | (x >= 'A') && (x <= 'F') = ord x - ord 'A' + 10
+  | otherwise = error "Can not convert to Int"
+
 -----------------------------------
 --
 -- Checks whether the last decimal digit is a valid check digit
